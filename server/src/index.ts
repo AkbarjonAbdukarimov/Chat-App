@@ -1,22 +1,27 @@
-import socketio from "socket.io";
-import http from "http";
 import express from "express";
-import cors from "cors";
+import http from "http";
+import { Server, Socket } from "socket.io";
+
 const app = express();
 const server = http.createServer(app);
-const io = new socketio.Server(server, { cors: { origin: "*" } });
-
-app.use(cors({ origin: "*" }));
-io.on("connection", (socket) => {
-  socket.on("disconnect", (message) => {
-    console.log("user disconnected", message);
+const io = new Server(server, { cors: { origin: "*" } });
+const users = [];
+// Set up Socket.IO connection and event handling
+io.on("connection", (socket: Socket) => {
+  console.log("New user connected", socket.id);
+  socket.on("new-user", (msg) => {
+    users.push({ ...msg, id: socket.id });
+    socket.emit("users", users);
   });
-  socket.on("recieve-message", (message) => {
-    console.log(message);
-    socket.broadcast.emit("send-message", message);
+
+  // Handle disconnection
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
   });
 });
 
-server.listen(3000, () => {
-  console.log("Running at localhost:3000");
+// Start the server on port
+const port = process.env.PORT || 5000;
+server.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });

@@ -1,45 +1,33 @@
+import React, { useEffect, useState } from 'react';
+import Login from './components/Login';
 import { socket } from './socket';
-import { ConnectionState } from './components/ConnectionState';
-import { ConnectionManager } from './components/ConnectionManager';
-import { MyForm } from './components/MyForm';
-import { useEffect, useState } from 'react';
-import { Events } from './components/Events';
-import Messages from './components/Messages';
+// Update with your server URL
 
-export default function App() {
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  const [user, setUser] = useState('')
-  const [messages, setMessages] = useState([])
+function App() {
+  const [messages, setMessages] = useState<string[]>([]);
+  const [user, setUser] = useState(null);
+  const [users, setUsers] = useState();
+  function onUsers(users) {
+    setUsers(users)
+  }
   useEffect(() => {
-    function onConnect() {
-      setIsConnected(true);
-    }
 
-    function onDisconnect() {
-      setIsConnected(false);
-    }
-
-    function recieveMessage(value) {
-      setMessages(previous => [...previous, value]);
-    }
-
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
-    socket.on('send-message', recieveMessage);
+    socket.on('users', onUsers)
+    socket.onAny((event, ...args) => {
+      console.log(event, args);
+    });
     return () => {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-      socket.off('send-message', recieveMessage);
-    };
-  }, [messages]);
+      socket.off('users', onUsers)
+    }
+  }, [setUsers])
+
 
   return (
-    <div className="App">
-      <ConnectionState isConnected={isConnected} />
-      <Events />
-      <ConnectionManager setUser={setUser} user={user} />
-      <MyForm setMessages={setMessages} user={user} />
-      <Messages user={user} messages={messages} />
-    </div>
+    <>
+      {!user ? <Login setUser={setUser} /> : <>{user}</>}
+    </>
+
   );
 }
+
+export default App;
