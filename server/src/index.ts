@@ -14,9 +14,11 @@ io.on("connection", (socket: Socket) => {
   console.log("New user connected", socket.id);
   socket.on("new-user", (msg) => {
     users.push({ ...msg, id: socket.id });
+    socket.emit("connected-user", { ...msg, id: socket.id });
     io.emit("users", users);
   });
   socket.on("private-message-sending", (msg: message) => {
+    console.log(msg);
     socket.to(msg.reciver.id).emit("private-message-recieving", msg);
   });
 

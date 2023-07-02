@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { socket } from '../socket'
 
-export default function Login() {
+export default function Login({ setUser }) {
     const [input, setInput] = useState('')
     //const { setUser } = useContext(UserContext)
     function handleSubmit(e) {
@@ -9,6 +9,7 @@ export default function Login() {
 
         socket.connect()
         socket.emit('new-user', { user: input })
+
         //setSocket(io('http://localhost:5000'))
     }
     return (

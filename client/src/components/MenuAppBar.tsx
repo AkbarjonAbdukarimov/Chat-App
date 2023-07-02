@@ -34,13 +34,13 @@ export default function MenuAppBar({ users, user, selectChat }) {
             <List>
                 {users.map((u) => {
                     if (u.user != user.user && u.id != user.id) {
-                        return <ListItem onClick={() => { selectChat(u) }} key={u.id}>
+                        return <ListItem onClick={() => { selectChat(u) }} key={u.id + u.user}>
                             <ListItemButton>
                                 <ListItemText primary={u.user} />
                             </ListItemButton>
                         </ListItem>;
                     }
-                    return <></>
+                    return;
 
                 }
                 )}

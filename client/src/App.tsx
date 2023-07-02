@@ -7,35 +7,38 @@ import BottomBar from './components/BottomBar';
 // Update with your server URL
 
 function App() {
-  const [chat, setChat] = useState(null);
-  const [user, setUser] = useState(null);
+  const [chat, setChat] = useState();
+  const [user, setUser] = useState();
   const [users, setUsers] = useState([]);
+
   function onUsers(msg) {
     setUsers(msg)
-    console.log('users', msg)
-    if (!user) { setUser(msg.at(-1)) }
+  }
+  function connectedUser(msg) {
 
+    setUser(msg)
   }
   useEffect(() => {
 
     socket.on('users', onUsers)
+    socket.on('connected-user', connectedUser)
     // socket.onAny((event, ...args) => {
     //   console.log(event, args);
     // });
     return () => {
       socket.off('users', onUsers)
+      socket.off('connected-user', connectedUser)
     }
-  }, [setUsers])
+  }, [setUser])
 
 
   return (
     <>
-      {!user ? <Login /> : <>
-        {/* <Sidebar user={user} users={users} /> */}
+      {!user ? <Login setUser={setUser} /> : <>
+
         <MenuAppBar selectChat={setChat} users={users} user={user} />
         <BottomBar chat={chat} sender={user} />
-        {/* {chat && chat.user} */}
-        {/* <TextField id="outlined-basic" label="Outlined" variant="outlined" /> */}
+
       </>}
     </>
 
