@@ -1,14 +1,14 @@
-import express from "express";
 import http from "http";
 import { Server, Socket } from "socket.io";
+import app from "./app";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
+const mongoURL = process.env.MONGO;
 
-const app = express();
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
-type user = { user: string; id: string };
-type message = { sender: user; message: string; reciver: user };
-const users: user[] = [];
-const messages: Array<message> = [];
+const io = new Server(server, { cors: { origin: process.env.CLIENT } });
+
 // Set up Socket.IO connection and event handling
 io.on("connection", (socket: Socket) => {
   console.log("New user connected", socket.id);
@@ -30,6 +30,11 @@ io.on("connection", (socket: Socket) => {
 
 // Start the server on port
 const port = process.env.PORT || 5000;
-server.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+server.listen(port, async () => {
+  try {
+    if (!mongoURL) throw new Error("Invalid Database Connection String");
+    await mongoose.connect(mongoURL);
+    console.log("Database connected!");
+    console.log("Serving on port", port);
+  } catch (error) {}
 });

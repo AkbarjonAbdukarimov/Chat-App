@@ -23,11 +23,16 @@ export default function BottomBar({ chat, sender }) {
     }
     const sendMessage = (e) => {
         e.preventDefault()
+        if(msg.legth<=0){
+            console.log('empty msg')
+        return
+        }
         setMessages(prev => {
             return [...prev, { message: msg, sender, reciver: chat }]
         });
         socket.emit('private-message-sending', { message: msg, sender, reciver: chat });
         setMsg('');
+        return
     }
     useEffect(() => {
         socket.on('private-message-recieving', onMessage)
