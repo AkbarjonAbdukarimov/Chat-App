@@ -8,7 +8,6 @@ userRouter.post(
   "/register",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log(req.body);
       const { username, password } = req.body;
       const hash = await Password.hashPassword(password);
       const hashed = `${hash.buff}.${hash.salt}`;

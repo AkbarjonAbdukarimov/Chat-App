@@ -10,33 +10,30 @@ function App() {
   const [chat, setChat] = useState();
   const [user, setUser] = useState();
   const [users, setUsers] = useState([]);
-
-  function onUsers(msg) {
-    setUsers(msg)
-  }
-  function connectedUser(msg) {
-
-    setUser(msg)
-  }
   useEffect(() => {
-
-    socket.on('users', onUsers)
-    socket.on('connected-user', connectedUser)
-    // socket.onAny((event, ...args) => {
-    //   console.log(event, args);
-    // });
-    return () => {
-      socket.off('users', onUsers)
-      socket.off('connected-user', connectedUser)
+    const userString = localStorage.getItem('user')
+    if (userString) {
+      const user = JSON.parse(userString);
+      if (user) setUser(user)
     }
-  }, [setUser])
+  }, [])
+  useEffect(() => {
+    if (user) {
+      const userString = JSON.stringify(user)
+      localStorage.setItem('user', userString)
+      socket.connect();
+      socket.emit('newUser', userString)
+    }
+  }, [user])
+
+
 
 
   return (
     <>
       {!user ? <Login setUser={setUser} /> : <>
 
-        <MenuAppBar selectChat={setChat} users={users} user={user} />
+        <MenuAppBar selectChat={setChat} users={users} user={user} setUser={setUser} />
         <BottomBar chat={chat} sender={user} />
 
       </>}

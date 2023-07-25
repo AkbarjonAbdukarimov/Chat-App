@@ -1,10 +1,32 @@
 import * as React from 'react';
-import { AppBar, Box, IconButton, List, ListItem, ListItemButton, ListItemText, SwipeableDrawer, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Button, IconButton, List, ListItem, ListItemButton, ListItemText, SwipeableDrawer, Toolbar, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import user from '../types/user.type';
-export default function MenuAppBar({ users, user, selectChat }) {
-    const [state, setState] = React.useState(false);
+import { socket } from '../socket';
+import { useEffect, useState } from 'react';
+export default function MenuAppBar({ user, selectChat, setUser }) {
+    const [state, setState] = useState(false);
+    const [activeUsers, setActiveUsers] = useState([])
+    function activeUsersFn() {
+        socket.on("activeUsers", (activeUsers) => {
+            setActiveUsers(prev => [...activeUsers])
+        })
+    }
 
+    useEffect(() => {
+        activeUsersFn()
+        return () => {
+            socket.off('activeUsers', activeUsersFn)
+        }
+    }, [setActiveUsers])
+
+
+
+
+    const handleLogOut = () => {
+        localStorage.clear()
+        setUser(null)
+        socket.disconnect()
+    }
 
     type Anchor = "left";
 
@@ -32,11 +54,11 @@ export default function MenuAppBar({ users, user, selectChat }) {
             onKeyDown={toggleDrawer(anchor, false)}
         >
             <List>
-                {users.map((u) => {
-                    if (u.user != user.user && u.id != user.id) {
-                        return <ListItem onClick={() => { selectChat(u) }} key={u.id + u.user}>
+                {activeUsers.map((u) => {
+                    if (u && u.id != user.id) {
+                        return <ListItem onClick={() => { selectChat(u) }} key={u.id}>
                             <ListItemButton>
-                                <ListItemText primary={u.user} />
+                                <ListItemText primary={u.username} />
                             </ListItemButton>
                         </ListItem>;
                     }
@@ -81,8 +103,13 @@ export default function MenuAppBar({ users, user, selectChat }) {
                     </React.Fragment>
 
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        {user.user}
+                        {user.username}
                     </Typography>
+
+                    <Typography onClick={handleLogOut} variant="h6" component="div" sx={{ justifySelf: "end", cursor: "pointer" }}>
+                        Log Out
+                    </Typography>
+
 
                 </Toolbar>
             </AppBar>

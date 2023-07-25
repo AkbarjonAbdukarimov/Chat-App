@@ -4,7 +4,7 @@ import userRouter from "./routes/userRoute";
 const app = express();
 app.use(
   cors({
-    origin: process.env.CLIENT,
+    origin: "*",
   })
 );
 app.use(json());
