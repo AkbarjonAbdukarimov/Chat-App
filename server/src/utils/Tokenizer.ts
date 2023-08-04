@@ -3,7 +3,10 @@ import { NextFunction, Request } from "express";
 import jwt from "jsonwebtoken";
 
 export default class Tokenizer {
-  static decryptUser<T>(jwtKey: string, req: Request): T {
+  static decryptUser<T>(
+    req: Request,
+    jwtKey: string | undefined = process.env.USER_KEY
+  ): T {
     const authHeader = req.headers.authorization;
     if (!authHeader) throw new Error("User Unathorised");
     try {

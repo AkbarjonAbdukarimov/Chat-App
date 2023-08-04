@@ -2,10 +2,13 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import axios from 'axios'
+import { UserContextProvider } from './context/userContext.tsx'
 
-axios.defaults.baseURL = 'http://localhost:3000/api'
+
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <App />
+    <UserContextProvider>
+      <App />
+    </UserContextProvider>
   </React.StrictMode>,
 )

@@ -1,0 +1,7 @@
+.user-conteiner{
+    cursor: pointer;
+    transition: 250ms;
+}
+.user-conteiner:hover{
+    background-color: #ffffff34;
+}

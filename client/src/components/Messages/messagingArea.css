@@ -1,0 +1,17 @@
+.top-container{
+    position: relative;
+}
+.input-container{
+    max-width:100%;
+    display: block;
+    background-color: transparent;
+    position: absolute;
+    bottom: 0;
+    margin: auto;
+}
+
+
+.chat-area{
+    max-height: 80%;
+    overflow-y: scroll;
+}

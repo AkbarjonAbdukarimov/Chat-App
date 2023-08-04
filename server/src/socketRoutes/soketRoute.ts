@@ -1,8 +1,10 @@
 import SocketServer from "../SoketServer";
 import IUser from "../interfaces/IUser";
 import Chat from "../models/Chat";
-
+import Message from "../models/Message";
+import fs from "node:fs";
 const io = SocketServer.getInstance;
+import path from "path";
 
 const startSocketServer = () => {
   console.log("Starting Socket Server");
@@ -16,23 +18,51 @@ const startSocketServer = () => {
         users.push(value.data.user);
       });
       io.emit("activeUsers", users);
-      // Chat.find({ users: { $in: [msg.id] } }, { password: 0 }).then((data) =>
-      //   socket.emit("chats", data)
-      // );
     });
-    //     socket.on("hello", () => {});
-    //     socket.on("basicEmit", (a, b, c) => {
-    //       // a is inferred as nuwmber, b as string and c as buffer
-    //     });
-    //     socket.on("new-user", (msg) => {
-    //       users.push({ ...msg, id: socket.id });
-    //       socket.emit("connected-user", { ...msg, id: socket.id });
-    //       io.emit("users", users);
-    //     });
-    //     socket.on("private-message-sending", (msg: message) => {
-    //       console.log(msg);
-    //       socket.to(msg.reciver.id).emit("private-message-recieving", msg);
-    //     });
+    socket.on("chatSelected", (chat) => {
+      socket.join(chat.id.toString());
+      console.log("joined room", chat.id.toString());
+    });
+    socket.on("recieveMsg", async (msg) => {
+      console.log(msg);
+      let m = {
+        sender: msg.sender,
+        reciever: msg.reciever.id,
+        chat: msg.chat,
+      };
+      console.log(msg.file);
+      if (msg.message) {
+        m = { ...m, message: msg.message };
+      }
+      const newMsg = Message.build(m);
+      const filePath = path.join(
+        __dirname,
+        "..",
+        "..",
+        "public",
+        newMsg.id + msg.file.originalName
+      );
+      if (msg.file) {
+        fs.writeFileSync(filePath, msg.file.buffer);
+        newMsg.file = newMsg.id + msg.file.originalName;
+      }
+      await newMsg.save();
+      //@ts-ignore
+      console.log(newMsg);
+      io.to(newMsg.chat.toString()).emit("sendMessage", newMsg);
+      //socket.to(msg.reciever.socketId).emit("sendMessage", msg);
+    });
+
+    socket.on("getChatMessages", async (user) => {
+      const existingChat = await Chat.findOne({
+        users: { $in: [socket.data.user.id, user.id] },
+      });
+      if (!existingChat) {
+        const newChat = await Chat.create({
+          users: [socket.data.user.id, user.id],
+        });
+      }
+    });
 
     //     // Handle disconnection
     socket.on("disconnect", () => {

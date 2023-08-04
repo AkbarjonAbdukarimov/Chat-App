@@ -22,7 +22,7 @@ class SocketServer {
         ServerToClientEvents,
         InterServerEvents,
         SocketData
-      >(server, { cors: { origin: "*" } }))
+      >(server, { cors: { origin: "*" }, maxHttpBufferSize: 2e7 }))
     );
   }
 }

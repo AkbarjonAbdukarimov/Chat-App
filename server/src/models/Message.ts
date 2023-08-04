@@ -1,4 +1,4 @@
-import { Document, Schema, model } from "mongoose";
+import { Document, Model, Schema, model } from "mongoose";
 import User from "./User";
 import Chat from "./Chat";
 
@@ -9,7 +9,10 @@ interface Message extends Document {
   message: string;
   file: string;
 }
-const messageSchema = new Schema<Message>(
+interface MessageModel extends Model<Message> {
+  build(attrs: Message): Message;
+}
+const messageSchema = new Schema(
   {
     sender: { type: Schema.Types.ObjectId, required: true, reg: User },
     reciever: { type: Schema.Types.ObjectId, required: true, reg: User },
@@ -26,7 +29,7 @@ const messageSchema = new Schema<Message>(
     },
   }
 );
-
-const Message = model<Message>("Message", messageSchema);
+messageSchema.statics.build = (attrs) => new Message(attrs);
+const Message = model<Message, MessageModel>("Message", messageSchema);
 
 export default Message;

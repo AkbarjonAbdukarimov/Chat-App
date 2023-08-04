@@ -6,7 +6,7 @@ interface Chat extends Document {
 }
 const charSchema = new Schema<Chat>(
   {
-    users: { type: [Schema.Types.ObjectId], required: true, reg: User },
+    users: { type: [Schema.Types.ObjectId], required: true, ref: User },
   },
   {
     toJSON: {
