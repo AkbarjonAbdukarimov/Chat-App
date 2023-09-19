@@ -1,31 +1,31 @@
-import { useContext, useState } from 'react';
-import Login from './components/Login';
-import Chats from './components/Chats';
-import UserContext from './context/userContext';
-import MessagingArea from './components/Messages/MessagingArea';
-import IChat from './interfaces/IChat';
-
+import { useContext } from "react";
+import Login from "./components/Login";
+import Chats from "./components/Chats";
+import UserContext from "./context/userContext";
 
 // Update with your server URL
 
 function App() {
-
-  const { user, setUser } = useContext(UserContext)
-  const [selectedChat, setSelectedChat] = useState<IChat | undefined>()
-
+  const { user, setUser } = useContext(UserContext);
 
   return (
     <>
-      {!user ? <Login setUser={setUser} /> : <>
-        <div style={{
-          height: '100vh'
-        }} className='row p-0 m-0' >
-          <Chats selectChat={setSelectedChat} />
-          <MessagingArea user={user} chat={selectedChat} />
-        </div>
-      </>}
+      {!user ? (
+        <Login setUser={setUser} />
+      ) : (
+        <>
+          <div
+            style={{
+              height: "100vh",
+            }}
+            className="d-flex p-0 m-0"
+          >
+            <Chats />
+            
+          </div>
+        </>
+      )}
     </>
-
   );
 }
 

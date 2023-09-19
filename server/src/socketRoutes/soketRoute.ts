@@ -35,14 +35,15 @@ const startSocketServer = () => {
         m = { ...m, message: msg.message };
       }
       const newMsg = Message.build(m);
-      const filePath = path.join(
-        __dirname,
-        "..",
-        "..",
-        "public",
-        newMsg.id + msg.file.originalName
-      );
+
       if (msg.file) {
+        const filePath = path.join(
+          __dirname,
+          "..",
+          "..",
+          "public",
+          newMsg.id + msg.file.originalName
+        );
         fs.writeFileSync(filePath, msg.file.buffer);
         newMsg.file = newMsg.id + msg.file.originalName;
       }

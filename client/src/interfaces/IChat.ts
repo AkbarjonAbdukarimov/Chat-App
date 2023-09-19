@@ -1,6 +1,8 @@
 import IUser from "./IUser";
 
 export default interface IChat {
-  users: Array<IUser>;
+  admin: string;
+  user: IUser;
   id?: string;
+  unreadMsgs:number
 }

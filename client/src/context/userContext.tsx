@@ -3,13 +3,13 @@ import IUser from "../interfaces/IUser";
 import { socket } from "../socket";
 import axios from "axios";
 interface IUserContext {
-  user: IUser;
+  user: IUser | undefined;
   setUser: Dispatch<React.SetStateAction<IUser | undefined>>
 }
 
 const UserContext = createContext<IUserContext>({});
 export const UserContextProvider = ({ children }: { children: React.ReactNode }) => {
-  axios.defaults.baseURL = 'http://192.168.0.113:3000/api';
+  axios.defaults.baseURL = 'http://localhost:3000/api';
   const [user, setUser] = useState<IUser | undefined>();
   axios.defaults.headers.common['Authorization'] = user && user.token
   useEffect(() => {
@@ -23,7 +23,7 @@ export const UserContextProvider = ({ children }: { children: React.ReactNode })
     if (user) {
       const userString = JSON.stringify(user)
       localStorage.setItem('user', userString)
-      socket.connect();
+      socket.connect()
       socket.emit('newUser', userString)
     }
   }, [user])

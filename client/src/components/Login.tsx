@@ -1,16 +1,15 @@
 import { useState } from 'react'
-import { socket } from '../socket'
 import axios from 'axios'
 type pageStatus = 'register' | 'login'
 export default function Login({ setUser }) {
-    const [username, setUsername] = useState('')
+    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [pageState, setPageState] = useState<pageStatus>('login')
     //const { setUser } = useContext(UserContext)
     async function handleSubmit(e) {
         e.preventDefault()
-        const res = await axios.post('/users/' + pageState, { username, password })
-        console.log(res)
+        const res = await axios.post('/admins/' + pageState, { email, password })
+
         setUser(res.data)
 
     }
@@ -20,7 +19,7 @@ export default function Login({ setUser }) {
             <form onSubmit={handleSubmit} className='col-6 col-lg-4 '>
                 <div className="mb-1">
                     <label htmlFor="exampleInputEmail1" className="form-label">Name</label>
-                    <input type="text" value={username} onChange={e => { setUsername(e.target.value) }} className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
+                    <input type="email" value={email} onChange={e => { setEmail(e.target.value) }} className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" />
                     <div id="emailHelp" className="form-text">Enter Your Name</div>
                 </div>
                 <div className="mb-3">
